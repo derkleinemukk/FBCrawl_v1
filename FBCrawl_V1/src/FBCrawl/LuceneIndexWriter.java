@@ -9,8 +9,15 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.*;
+import org.json.simple.JSONValue;
+
+
+
 import org.json.simple.JSONValue;
 
 import java.io.*;
@@ -25,7 +32,7 @@ public class LuceneIndexWriter {
 
     String indexPath = "";
 
-    String jsonFilePath = "";
+    String jsonFilePath = "" ;
 
     IndexWriter indexWriter = null;
 
@@ -34,8 +41,8 @@ public class LuceneIndexWriter {
         this.jsonFilePath = jsonFilePath;
     }
 
-    public void createIndex(){
-        JSONArray jsonObjects = parseJSONFile();
+    public void createIndex(Reader input){
+        JSONArray jsonObjects = parseJSONFile(input);
         openIndex(); 
         addDocuments(jsonObjects);
         finish();
@@ -43,16 +50,25 @@ public class LuceneIndexWriter {
 
     /**
      * Parse a Json file. The file path should be included in the constructor
+     * @throws JSONException 
      */
-    public JSONArray parseJSONFile(){
-
-        //Get the JSON file, in this case is in ~/resources/test.json
-        InputStream jsonFile =  getClass().getResourceAsStream(jsonFilePath);
+    public JSONArray parseJSONFile(Reader input){
+    	
+    	String search = "name";
+    	 //Get the JSON file, in this case is in ~/resources/test.json
+    	
+     InputStream jsonFile =  getClass().getResourceAsStream(jsonFilePath);
         Reader readerJson = new InputStreamReader(jsonFile);
+        Reader readerJsonSimon = input;
 
         //Parse the json file using simple-json library
         Object fileObjects= JSONValue.parse(readerJson);
+//        System.out.println(fileObjects);
         JSONArray arrayObjects=(JSONArray)fileObjects;
+        
+      
+//        JSONArray arrayObjects = ob.getJSONArray();
+      
 
         return arrayObjects;
 
