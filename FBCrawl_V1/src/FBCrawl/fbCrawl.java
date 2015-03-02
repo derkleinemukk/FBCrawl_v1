@@ -50,24 +50,28 @@ public class fbCrawl {
          String new_accesstoken = http.getAccessToken();
 		System.out.println("Testing 1 - Send Http GET request");
 		
+		
+		facebook4J facebook = new facebook4J();
 		//first try, copied from internet, doesn't reall work
 		//		http.sendGet(new_accesstoken);
 		
 		//second try from the scratch
 		
 		//Initialize index
-		HelloLuceneSimon hls = new HelloLuceneSimon();
-		//http.GetAndAddToIndex(new_accesstoken, hls, "1542620855978885");
+//		HelloLuceneSimon hls = new HelloLuceneSimon();
+//		http.GetAndAddToIndex(new_accesstoken, hls, "1542620855978885");
 		//http.GetAndAddToIndex(new_accesstoken, hls, "1560282070877106");
 		String[] query;
 	     query = new String[5];
 	     query[0] = "oranje";
 	     query[1] = "snow";
 	     
-	     hls.close();	
-		hls.search(query);
+//	     	
+//	     hls.deleteAndUpdate("1542620855978885");
+//	     hls.close();
+//		hls.search(query);
+//		
 		
-	
 		
 		
 		//http.testWriteIndex();

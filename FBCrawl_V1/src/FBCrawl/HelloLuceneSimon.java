@@ -139,4 +139,20 @@ Directory index = null;
       	
     	
     }
+    
+    public void deleteAndUpdate(String id) throws IOException{
+    	
+String querystr = id;
+    	
+    	Query q = null;
+    	try {
+    		q = new QueryParser(Version.LUCENE_40, "id", analyzer).parse(querystr);
+    	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	w.deleteDocuments(q);
+    }
+    
+    
 }
