@@ -128,11 +128,7 @@ Directory index = null;
     
     public void readFromFile() throws IOException{
     	
-    	 
-   
-      	
-    	
-      	
+    	     	
       	 File path = new File("uniqueName");
        	Directory public_index = new MMapDirectory(path);
        	this.index = public_index;

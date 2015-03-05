@@ -1,11 +1,9 @@
 package FBCrawl;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
-
-
-
-
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ListIterator;
 
@@ -15,37 +13,65 @@ import facebook4j.conf.ConfigurationBuilder;
 public class facebook4J{
     private static final long serialVersionUID = -7453606094644144082L;
 
-    public static void main(String args[]) throws IOException, FacebookException {
+    public void IDretrieval(String query) throws FileNotFoundException, UnsupportedEncodingException, FacebookException {
       
        
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-          .setOAuthAppId("572563469546265")
-          .setOAuthAppSecret("352d672c3e2830660e00a1e39a5a2116")
-          .setOAuthAccessToken("CAACEdEose0cBAHiLk1e2AlbmPHzte7IkgvpdAqMw6zFrbTwMoUjCWszpPErgZBQqHE3fNWmo6ZBY9G4yISPSp1F5LjFdd0BlkKkFuu951GAASxXZCuQotkfuSgojOwEZAgYfStcakbjJlWBG95pjKZB2yHxaZCVAyZCtG8yqNbQzAG7RP7aLx6MytZAUPo3LZBrYjgnPy7wlvWVF40N13GeZCA")
+          .setOAuthAppId("657861844318963")
+          .setOAuthAppSecret("52ff9596f18ed0ee9ae7992fee481246")
+          .setOAuthAccessToken("CAACEdEose0cBACt6eqE9D1yhlKafF5DvzNihvGcf3T2ChY5wtQLKzxSZBZCwKpVkpEz0nSvSt1J5yc0LpT1EuXXHuVuD8PMKw5RGYBTew48CRruCeWBiAq3aZCupz3zc33tEJP4Aj623o3ECp8LoYMFi8iYhv19KSe1sjIRA1XlG3itr4H1hA8pDrZBZAZCsWGmneyoLcAyn2i6pg4TzdW")
           .setOAuthPermissions("email,publish_stream");
         FacebookFactory ff = new FacebookFactory(cb.build());
         Facebook facebook = ff.getInstance();
         
-    	int lowerBoundary = 1388534400;
-		int upperBoundary = lowerBoundary + 604800;
+    	int lowerBoundary = 1422748800;
+		int upperBoundary = lowerBoundary + 86400;
 		ResponseList<Event> results;
 		String lowerBoundaryString;
 		String upperBoundaryString;
 		int help = 0;
-		while(lowerBoundary < 1425440000 ){
+		int i=0;
+		
+		String file_name= query+".txt";
+		PrintWriter writer = new PrintWriter(file_name, "UTF-8");
+		
+		while(lowerBoundary < 1423008000 ){
 			 lowerBoundaryString = Integer.toString(lowerBoundary);
 			 upperBoundaryString = Integer.toString(upperBoundary);
-        results = facebook.searchEvents("Amsterdam", new Reading().since(lowerBoundaryString).until(upperBoundaryString));
-        System.out.println(results.size());
-        //ListIterator<Event> list = results.listIterator();
-        String eventID;
+			 
+	   System.out.println(lowerBoundaryString);
+        results = facebook.searchEvents(query, new Reading().since(lowerBoundaryString).until(upperBoundaryString));
+        boolean a = true;
+        System.out.println(results.isEmpty());
+        System.out.println(results.getCount());
+        if( a == results.isEmpty()){
+        	System.out.println("we're screwed");
+        }
+        else {;
         
+        System.out.println(results.toString());
+        int counter = 0;
+
+      
+//        while( counter < 4){ 
+//      
+//        writer.println(results.get(counter).getId());
+//        System.out.println(results.get(counter).getId());
+//        //ListIterator<Event> list = results.listIterator();
+//        counter++;
+//        }
+   
+        }
+        i++;
         lowerBoundary = upperBoundary;
-        upperBoundary = lowerBoundary + 604800;
+        upperBoundary = lowerBoundary + 86400;
         help++;
         }
-		System.out.println(help);
+		
+		writer.close();
+		
+		
 //        int i = results.getCount();
      
 //int i = 0;
