@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
@@ -252,7 +253,7 @@ public class fbCrawl {
     	    
 
 }
-    public void readIDs(String input) throws FileNotFoundException, UnsupportedEncodingException, FacebookException{
+    public void readIDs(String input, long timeFrom, long timeTo) throws FileNotFoundException, UnsupportedEncodingException, FacebookException{
     	facebook4J IDs = new facebook4J();
 		String[] query;
 	     query = new String[5];
@@ -260,8 +261,9 @@ public class fbCrawl {
 	     query[1] = "Amsterdam";
 	     
 	     System.out.println(query[0]);
+	     
 		String file_name= query[0];
-		IDs.IDretrieval(file_name);
+		IDs.IDretrieval(file_name, timeFrom, timeTo);
     }
     
     

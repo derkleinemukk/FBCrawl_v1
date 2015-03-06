@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="C:/lucene-4.10.3/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="C:/lucene-4.10.3/json-20090211.jar"/>
 	<classpathentry kind="lib" path="C:/lucene-4.10.3/facebook4j-core-2.2.2.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-4.10.3/jdatepicker-1.3.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
