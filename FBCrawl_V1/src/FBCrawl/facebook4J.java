@@ -75,12 +75,14 @@ public class facebook4J{
     		break;
         }
         else{
+        	if (newlastEventDate != null){
         oldlastEvent = newlastEventDate.getTime()/1000L;
-        
+        	}
         newlastEventDate = results.get((i2-1)).getStartTime();
         
        
         tsEvent = new Long(newlastEventDate.getTime()/1000L);
+        newlastEvent = tsEvent;
         System.out.println("last timestamp:"+tsEvent);
         
         }
