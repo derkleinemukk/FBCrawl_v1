@@ -34,7 +34,9 @@ public class facebook4J{
 		int i=0;
 		long tsEvent = 0;
 		int EventCounter = 0;
-		
+		java.util.Date newlastEventDate = null;
+		long newlastEvent = 0;
+		long oldlastEvent = 0;
 		String file_name= query+".txt";
 		PrintWriter writer = new PrintWriter(file_name, "UTF-8");
 		
@@ -63,20 +65,34 @@ public class facebook4J{
         	EventCounter++;
         }
         
-        java.util.Date lastEvent = results.get((i2-1)).getStartTime();
-    
-        tsEvent = new Long(lastEvent.getTime()/1000L);
-        System.out.println("last timestamp:"+tsEvent);
-  
+        System.out.println("newlastevent" + newlastEvent);
+        System.out.println("oldlastevent" + oldlastEvent);
+        if (oldlastEvent == newlastEvent && oldlastEvent != 0){
+        	 System.out.println("were in the if statement now");
+             
+        	writer.println("Number of ids:" +EventCounter);
+    		writer.close();
+    		break;
         }
+        else{
+        oldlastEvent = newlastEventDate.getTime()/1000L;
+        
+        newlastEventDate = results.get((i2-1)).getStartTime();
+        
+       
+        tsEvent = new Long(newlastEventDate.getTime()/1000L);
+        System.out.println("last timestamp:"+tsEvent);
+        
+        }
+        
         i++;
-    
-        lowerBoundary = (int)tsEvent;
+        
+        
         //upperBoundary = lowerBoundary + 86400;
         help++;
         }
-		writer.println("Number of ids:" +EventCounter);
-		writer.close();
+        }
+	
 		
 
                

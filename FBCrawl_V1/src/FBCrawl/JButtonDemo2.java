@@ -39,7 +39,7 @@ import facebook4j.FacebookException;
     		
     		
     		jbnButton1.setMnemonic(KeyEvent.VK_I);	//Set ShortCut Keys
-    		jtfInput.setText("Amsteardam");
+    		jtfInput.setText("Amsterdam");
     		
     		UtilDateModel modelFrom = new UtilDateModel();
     		UtilDateModel modelTo = new UtilDateModel();
