@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.Date;
 import java.util.ListIterator;
 
 import facebook4j.*;
@@ -20,7 +21,7 @@ public class facebook4J{
         cb.setDebugEnabled(true)
           .setOAuthAppId("657861844318963")
           .setOAuthAppSecret("52ff9596f18ed0ee9ae7992fee481246")
-          .setOAuthAccessToken("CAACEdEose0cBALE7BUdNsrNHlcZCAdPt0Qzp3BlZAZByCZBXUuVvNLZBuKYZBUYH73XNDQZBeuyuvfAEFVJ3GfOIkWfk7x6LJElQLRf2xPrKZARfs7l0cLDM8vE0VcoKtpxXdWglXlOlRNy1tLlx359QnK3wZCh3KAUZCfiESt6TICO2uo2U4nZCm3EZByp4GSrIDJzQO72SC4wIm2wHv4AohSLh")
+          .setOAuthAccessToken("CAACEdEose0cBALIZCZAzoB8Y9ZCwwlutcgV5AtYcrqyuobsBRLgDybIl2gRI4mdQzlQsfXVZCLA8RimUQo5rljHMSPGuzDH50UpUZCOoHGFuTxMtsn8iLFKvB45K4MC8GZA7lIVfn5TviAMOtSfXBXrR5MR0JdIFQWU3VaRhYGAIYjSdSEqQeJ0rpNkW2b52Vrg5HTowDVSUuZAuBxRawtp")
           .setOAuthPermissions("email,publish_stream");
         FacebookFactory ff = new FacebookFactory(cb.build());
         Facebook facebook = ff.getInstance();
@@ -29,7 +30,7 @@ public class facebook4J{
 		int endDate = (int) timeTo;
 		ResponseList<Event> results;
 		String lowerBoundaryString;
-		String upperBoundaryString;
+		String ImplEndDate;
 		int help = 0;
 		int i=0;
 		long tsEvent = 0;
@@ -37,21 +38,24 @@ public class facebook4J{
 		java.util.Date newlastEventDate = null;
 		long newlastEvent = 0;
 		long oldlastEvent = 0;
-		String file_name= query+".txt";
+		String file_name= query+timeFrom+timeTo+".txt";
 		PrintWriter writer = new PrintWriter(file_name, "UTF-8");
 		
-		while(lowerBoundary < endDate ){
-			 lowerBoundaryString = Integer.toString(lowerBoundary);
+		while(endDate > lowerBoundary){
+			System.out.println("end:" +endDate);
+			System.out.println("lower:"+lowerBoundary);
+			ImplEndDate = Integer.toString(endDate);
 			// upperBoundaryString = Integer.toString(upperBoundary);
 			 
-			 System.out.println("timestamp: "+lowerBoundaryString);
-		        results = facebook.searchEvents(query, new Reading().since(lowerBoundaryString));
+			 System.out.println("timestamp: "+ImplEndDate);
+		        results = facebook.searchEvents(query, new Reading().until(ImplEndDate));
         boolean a = true;
 
         if( a == results.isEmpty()){
         	System.out.println("we're screwed");
+        	break;
         }
-        else {;
+        else {
         
         
         //My creation
@@ -65,27 +69,17 @@ public class facebook4J{
         	EventCounter++;
         }
         
-        System.out.println("newlastevent" + newlastEvent);
-        System.out.println("oldlastevent" + oldlastEvent);
-        if (oldlastEvent == newlastEvent && oldlastEvent != 0){
-        	 System.out.println("were in the if statement now");
-             
-        	writer.println("Number of ids:" +EventCounter);
-    		writer.close();
-    		break;
-        }
-        else{
-        	if (newlastEventDate != null){
-        oldlastEvent = newlastEventDate.getTime()/1000L;
-        	}
-        newlastEventDate = results.get((i2-1)).getStartTime();
         
-       
-        tsEvent = new Long(newlastEventDate.getTime()/1000L);
-        newlastEvent = tsEvent;
+        Date lastEvent = results.get(i2-1).getStartTime();
+        tsEvent = new Long(lastEvent.getTime()/1000);
         System.out.println("last timestamp:"+tsEvent);
+        writer.println("last timestamp :"+tsEvent);
+        endDate = (int) tsEvent;
         
         }
+        System.out.println("done");
+        writer.println("Number of ids:" +EventCounter);
+		writer.close();
         
         i++;
         
@@ -93,8 +87,6 @@ public class facebook4J{
         //upperBoundary = lowerBoundary + 86400;
         help++;
         }
-        }
-	
 		
 
                

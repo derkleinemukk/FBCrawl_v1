@@ -24,7 +24,7 @@ import facebook4j.FacebookException;
 
     public class JButtonDemo2 {
     	JFrame jtfMainFrame;
-    	JButton jbnButton1, jbnButton2;
+    	JButton jbnButton1, jbnButton2, jbnButton3;
     	JTextField jtfInput; 
     	JPanel jplPanel;
     	
@@ -34,6 +34,7 @@ import facebook4j.FacebookException;
         	jtfMainFrame.setSize(300,300);
     		jbnButton1 = new JButton("Read IDs"); 
     		jbnButton2 = new JButton("Read events");
+    		jbnButton3 = new JButton("search");
     		jtfInput = new JTextField(20);
     		jplPanel = new JPanel();
     		
@@ -98,11 +99,25 @@ import facebook4j.FacebookException;
 					}
             	}
             });
+            
+            jbnButton3.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		String search_term = jtfInput.getText();
+            		try {
+						fbCrawl.search(search_term);
+					}
+					 catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
+            });
 
     		jplPanel.setLayout(new FlowLayout());
     		jplPanel.add(jtfInput);
     		jplPanel.add(jbnButton1); 
     		jplPanel.add(jbnButton2);
+    		jplPanel.add(jbnButton3);
     		jplPanel.add(datePickerFrom);
     		jplPanel.add(datePickerTo);
         		

@@ -54,9 +54,11 @@ public class fbCrawl {
  public JSONObject json;
  public static String new_accesstoken = "";
 
+
 	public static void main(String[] args) throws Exception {
 		fbCrawl http = new fbCrawl();
 		JButtonDemo2 application = new JButtonDemo2(http); 
+		 
 		
 		
 		
@@ -107,71 +109,72 @@ public class fbCrawl {
 
  
 	// HTTP GET request
-	private void sendGet(String new_accesstoken, String id) throws Exception {
-
-		
-		String url = "https://graph.facebook.com/";
-		url += id;
-		url += "?";
-		url += new_accesstoken;
- 
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		
-		
- 
-		// optional default is GET
-		con.setRequestMethod("GET");
- 
-		//add request header
-		con.setRequestProperty("User-Agent", USER_AGENT);
- 
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
- 
-		BufferedReader in = new BufferedReader(
-		      new InputStreamReader(con.getInputStream()));
-		Reader input =  new InputStreamReader(con.getInputStream());
-		
-		testWriteIndex(input);
-		String inputLine;
-		StringBuffer response = new StringBuffer();
- 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-		
-		
- 
-		
-			try {
-		    json = new JSONObject(response.toString());
-
-		    String title = (String) json.get("name");
-		    System.out.println(title);
-
-		} catch (JSONException e) {
-		    e.printStackTrace();
-		}
-			
-			 
-//		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("1406653962962329.json"))) {
-//		    oos.writeObject(json);
-//		  }
-//		FileOutputStream fos = new FileOutputStream("1406653962962329.json");
-//		ObjectOutputStream oos = new ObjectOutputStream(fos);
-//		ObjectOutputStream.writeObject(json);
-	//	testWriteIndex();
-	}
+//	private void sendGet(String new_accesstoken, String id) throws Exception {
+//
+//		
+//		String url = "https://graph.facebook.com/";
+//		url += id;
+//		url += "?";
+//		url += new_accesstoken;
+// 
+//		URL obj = new URL(url);
+//		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//		
+//		
+// 
+//		// optional default is GET
+//		con.setRequestMethod("GET");
+// 
+//		//add request header
+//		con.setRequestProperty("User-Agent", USER_AGENT);
+// 
+//		int responseCode = con.getResponseCode();
+//		System.out.println("\nSending 'GET' request to URL : " + url);
+//		System.out.println("Response Code : " + responseCode);
+// 
+//		BufferedReader in = new BufferedReader(
+//		      new InputStreamReader(con.getInputStream()));
+//		Reader input =  new InputStreamReader(con.getInputStream());
+//		
+//		testWriteIndex(input);
+//		String inputLine;
+//		StringBuffer response = new StringBuffer();
+// 
+//		while ((inputLine = in.readLine()) != null) {
+//			response.append(inputLine);
+//		}
+//		in.close();
+//		
+//		
+// 
+//		
+//			try {
+//		    json = new JSONObject(response.toString());
+//
+//		    String title = (String) json.get("name");
+//		    System.out.println(title);
+//
+//		} catch (JSONException e) {
+//		    e.printStackTrace();
+//		}
+//			
+//			 
+////		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("1406653962962329.json"))) {
+////		    oos.writeObject(json);
+////		  }
+////		FileOutputStream fos = new FileOutputStream("1406653962962329.json");
+////		ObjectOutputStream oos = new ObjectOutputStream(fos);
+////		ObjectOutputStream.writeObject(json);
+//	//	testWriteIndex();
+//	}
 	
 	private void GetAndAddToIndex(String new_accesstoken, HelloLuceneSimon hls, String id) throws Exception {
 		//get data from fb
 		String inputLine;
 		String url = "https://graph.facebook.com/";
 		url += id;
-		url += "?";
+		
+		url += "?fields=id,attending_count,description,declined_count,invited_count,name,start_time&";
 		url += new_accesstoken;
  
 		URL obj = new URL(url);
@@ -187,6 +190,8 @@ public class fbCrawl {
 		System.out.println("\nSending 'GET' request to URL : " + url);
 		System.out.println("Response Code : " + responseCode);
 		
+		
+		if (responseCode == 200){
 		   BufferedReader streamReader = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
 		    StringBuilder responseStrBuilder = new StringBuilder();
 
@@ -218,7 +223,7 @@ public class fbCrawl {
 	        }
 		
 		}
-	
+	}
 
 
 
@@ -266,14 +271,22 @@ public class fbCrawl {
 		IDs.IDretrieval(file_name, timeFrom, timeTo);
     }
     
-    
+    public void search(String input) throws FacebookException, IOException, ParseException{
+    	HelloLuceneSimon hls = new HelloLuceneSimon();
+    	String[] searchTerm = new String[1];
+    	searchTerm[0] = input;
+	     hls.search(searchTerm);
+	     hls.close();
+	   
+		
+    }
    
 	
 	
 	
     public void crawlAndIndex(String file_name) throws Exception{
     	
-    	 HelloLuceneSimon hls = new HelloLuceneSimon();
+    	HelloLuceneSimon hls = new HelloLuceneSimon();
 	BufferedReader br = new BufferedReader(new FileReader(file_name));
 	String line = null;
 	while ((line = br.readLine()) != null) {
@@ -285,43 +298,6 @@ public class fbCrawl {
 	
 	
     hls.close();	
-	//hls.search(query);
+
     }
 }
-//private static String readAll(Reader rd) throws IOException {
-//    StringBuilder sb = new StringBuilder();
-//    int cp;
-//    while ((cp = rd.read()) != -1) {
-//      sb.append((char) cp);
-//    }
-//    return sb.toString();
-//  }
-
-//    public JSONArray parseJSONFile(){
-//
-//        //Get the JSON file, in this case is in ~/resources/test.json
-//        InputStream jsonFile =  getClass().getResourceAsStream(jsonFilePath);
-//        Reader readerJson = new InputStreamReader(jsonFile);
-//
-//        //Parse the json file using simple-json library
-//        Object fileObjects= JSONValue.parse(readerJson);
-//        JSONArray arrayObjects=(JSONArray)fileObjects;
-//
-//        return arrayObjects;
-//
-//    }
-    
-
-//    
-//      public static JSONObject readJsonFromUrl(String url) throws IOException, JarException {
-//        InputStream is = new URL(url).openStream();
-//        try {
-//          BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-//          Map jsonText = readAll(rd);
-//          JSONObject json = new JSONObject(jsonText);
-//          return json;
-//        } finally {
-//          is.close();
-//        }
-//      }
-//}
