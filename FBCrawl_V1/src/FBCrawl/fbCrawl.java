@@ -46,13 +46,14 @@ import org.json.simple.JSONValue;
 import facebook4j.FacebookException;
 
  
+
 public class fbCrawl {
- 
+
 	private final static String USER_AGENT = "Mozilla/5.0";
 	public final String INDEX_PATH = "";
-   public String jsonFilePath = "/Users/Simon/git/FBCrawl_v2/FBCrawl_V1/src/test.txt";
- public JSONObject json;
- public static String new_accesstoken = "";
+  public String jsonFilePath = "/Users/Simon/git/FBCrawl_v2/FBCrawl_V1/src/test.txt";
+public JSONObject json;
+public static String new_accesstoken = "";
 
 
 	public static void main(String[] args) throws Exception {
@@ -64,7 +65,7 @@ public class fbCrawl {
 		
 		
 		
-         new_accesstoken = getAccessToken();
+        new_accesstoken = getAccessToken();
 		System.out.println("Testing 1 - Send Http GET request\n");
 		
 		//first try, copied from internet, doesn't reall work
@@ -87,7 +88,7 @@ public class fbCrawl {
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
 			con.setRequestProperty("User-Agent", USER_AGENT);
- 
+
 			int responseCode = con.getResponseCode();
 			System.out.println("\nSending 'GET' request to URL : " + url);
 			System.out.println("Response Code : " + responseCode);
@@ -107,7 +108,7 @@ public class fbCrawl {
 			return (response.toString());
 }
 
- 
+
 	// HTTP GET request
 //	private void sendGet(String new_accesstoken, String id) throws Exception {
 //
@@ -116,22 +117,22 @@ public class fbCrawl {
 //		url += id;
 //		url += "?";
 //		url += new_accesstoken;
-// 
+//
 //		URL obj = new URL(url);
 //		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 //		
 //		
-// 
+//
 //		// optional default is GET
 //		con.setRequestMethod("GET");
-// 
+//
 //		//add request header
 //		con.setRequestProperty("User-Agent", USER_AGENT);
-// 
+//
 //		int responseCode = con.getResponseCode();
 //		System.out.println("\nSending 'GET' request to URL : " + url);
 //		System.out.println("Response Code : " + responseCode);
-// 
+//
 //		BufferedReader in = new BufferedReader(
 //		      new InputStreamReader(con.getInputStream()));
 //		Reader input =  new InputStreamReader(con.getInputStream());
@@ -139,14 +140,14 @@ public class fbCrawl {
 //		testWriteIndex(input);
 //		String inputLine;
 //		StringBuffer response = new StringBuffer();
-// 
+//
 //		while ((inputLine = in.readLine()) != null) {
 //			response.append(inputLine);
 //		}
 //		in.close();
 //		
 //		
-// 
+//
 //		
 //			try {
 //		    json = new JSONObject(response.toString());
@@ -176,16 +177,16 @@ public class fbCrawl {
 		
 		url += "?fields=id,attending_count,description,declined_count,invited_count,name,start_time&";
 		url += new_accesstoken;
- 
+
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
- 
+
 		// optional default is GET
 		con.setRequestMethod("GET");
- 
+
 		//add request header
 		con.setRequestProperty("User-Agent", USER_AGENT);
- 
+
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
 		System.out.println("Response Code : " + responseCode);
@@ -209,7 +210,7 @@ public class fbCrawl {
 //		
 //		StringBuffer response = new StringBuffer();
 //		 	
-// 		while ((inputLine = in.readLine()) != null) {
+//		while ((inputLine = in.readLine()) != null) {
 //			response.append(inputLine);
 //		}
 //		
@@ -227,39 +228,39 @@ public class fbCrawl {
 
 
 
-    //@Test
-    public void testWriteIndex(Reader input){
-    	
-    	 try {      	
-            
-            
-            LuceneIndexWriter lw = new LuceneIndexWriter(INDEX_PATH, jsonFilePath);
-            lw.createIndex(input);
+   //@Test
+   public void testWriteIndex(Reader input){
+   	
+   	 try {      	
+           
+           
+           LuceneIndexWriter lw = new LuceneIndexWriter(INDEX_PATH, jsonFilePath);
+           lw.createIndex(input);
 
-            //Check the index has been created successfully
-            Directory indexDirectory = FSDirectory.open(new File(INDEX_PATH));
-            IndexReader indexReader = DirectoryReader.open(indexDirectory);
+           //Check the index has been created successfully
+           Directory indexDirectory = FSDirectory.open(new File(INDEX_PATH));
+           IndexReader indexReader = DirectoryReader.open(indexDirectory);
 
-            int numDocs = indexReader.numDocs();
-            //assertEquals(numDocs, 3);
+           int numDocs = indexReader.numDocs();
+           //assertEquals(numDocs, 3);
 
-            for ( int i = 0; i < numDocs; i++)
-            {
-                Document document = indexReader.document( i);
-                System.out.println( "d=" +document);
-            }
+           for ( int i = 0; i < numDocs; i++)
+           {
+               Document document = indexReader.document( i);
+               System.out.println( "d=" +document);
+           }
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    	 
-    	  
-    	    
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+   	 
+   	  
+   	    
 
 }
-    public void readIDs(String input, long timeFrom, long timeTo) throws FileNotFoundException, UnsupportedEncodingException, FacebookException{
-    	facebook4J IDs = new facebook4J();
+   public void readIDs(String input, long timeFrom, long timeTo) throws FileNotFoundException, UnsupportedEncodingException, FacebookException{
+   	facebook4J IDs = new facebook4J();
 		String[] query;
 	     query = new String[5];
 	     query[0] = input;
@@ -269,35 +270,45 @@ public class fbCrawl {
 	     
 		String file_name= query[0];
 		IDs.IDretrieval(file_name, timeFrom, timeTo);
-    }
-    
-    public void search(String input) throws FacebookException, IOException, ParseException{
-    	HelloLuceneSimon hls = new HelloLuceneSimon();
-    	String[] searchTerm = new String[1];
-    	searchTerm[0] = input;
+   }
+   
+   public void search(String input) throws FacebookException, IOException, ParseException{
+   	HelloLuceneSimon hls = new HelloLuceneSimon();
+   	String[] searchTerm = new String[1];
+   	searchTerm[0] = input;
 	     hls.search(searchTerm);
 	     hls.close();
 	   
 		
-    }
-   
+   }
+  
+   public void countDailyEvents(String input) throws FacebookException, IOException, ParseException{
+	   	HelloLuceneSimon hls = new HelloLuceneSimon();
+	   	String[] searchTerm = new String[1];
+	   	searchTerm[0] = input;
+		     hls.countDailyEvents(searchTerm);
+		     hls.close();
+		   
+			
+	   }
+	  
 	
 	
 	
-    public void crawlAndIndex(String file_name) throws Exception{
-    	
-    	HelloLuceneSimon hls = new HelloLuceneSimon();
+   public void crawlAndIndex(String file_name) throws Exception{
+   	
+   	HelloLuceneSimon hls = new HelloLuceneSimon();
 	BufferedReader br = new BufferedReader(new FileReader(file_name));
 	String line = null;
 	while ((line = br.readLine()) != null) {
 		GetAndAddToIndex(new_accesstoken, hls, line);
 	}
- 
+
 	br.close();		
 	
 	
 	
-    hls.close();	
+   hls.close();	
 
-    }
+   }
 }

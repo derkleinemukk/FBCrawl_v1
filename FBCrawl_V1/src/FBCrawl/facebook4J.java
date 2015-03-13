@@ -21,12 +21,13 @@ public class facebook4J{
         cb.setDebugEnabled(true)
           .setOAuthAppId("657861844318963")
           .setOAuthAppSecret("52ff9596f18ed0ee9ae7992fee481246")
-          .setOAuthAccessToken("CAACEdEose0cBALIZCZAzoB8Y9ZCwwlutcgV5AtYcrqyuobsBRLgDybIl2gRI4mdQzlQsfXVZCLA8RimUQo5rljHMSPGuzDH50UpUZCOoHGFuTxMtsn8iLFKvB45K4MC8GZA7lIVfn5TviAMOtSfXBXrR5MR0JdIFQWU3VaRhYGAIYjSdSEqQeJ0rpNkW2b52Vrg5HTowDVSUuZAuBxRawtp")
+          .setOAuthAccessToken("CAACEdEose0cBANxEo6gOHVwcTobZBqv9ZBr7IdM3vLfqlmaopZCC9pW3z8HwZAsXKROZCovpvhROAzSQOorvGpWwBcw4ZAkjm807YCpdUpALwub9Msp1DbRdslQ3lAGatHLTI72CrXTXDcrPnQ0uEl9BTu2ZA9HuARuJLyKWHsjAhJSMSjLfjVMImGTGdnaQfq7kvaP8EKmHZCaC1xPYPN2ckxE0H5a0L40ZD")
           .setOAuthPermissions("email,publish_stream");
         FacebookFactory ff = new FacebookFactory(cb.build());
         Facebook facebook = ff.getInstance();
         
     	int lowerBoundary = (int) timeFrom;
+    	int lastBoundary = 0;
 		int endDate = (int) timeTo;
 		ResponseList<Event> results;
 		String lowerBoundaryString;
@@ -38,10 +39,14 @@ public class facebook4J{
 		java.util.Date newlastEventDate = null;
 		long newlastEvent = 0;
 		long oldlastEvent = 0;
-		String file_name= query+timeFrom+timeTo+".txt";
+		String file_name= query+".txt";
 		PrintWriter writer = new PrintWriter(file_name, "UTF-8");
 		
 		while(endDate > lowerBoundary){
+			if(lowerBoundary == lastBoundary){
+				System.out.println("end");
+				break;
+			}else{
 			System.out.println("end:" +endDate);
 			System.out.println("lower:"+lowerBoundary);
 			ImplEndDate = Integer.toString(endDate);
@@ -83,12 +88,12 @@ public class facebook4J{
         
         i++;
         
-        
+        lastBoundary=lowerBoundary;
         //upperBoundary = lowerBoundary + 86400;
         help++;
         }
 		
-
+		}
                
     }
 }

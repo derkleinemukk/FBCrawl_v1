@@ -32,6 +32,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
@@ -117,7 +118,7 @@ public class HelloLuceneSimon implements Comparable {
     	
     	Query q = null;
     	try {
-    		q = new QueryParser(Version.LUCENE_40, "start_time", analyzer).parse(querystr);
+    		q = new QueryParser(Version.LUCENE_40, "description", analyzer).parse(querystr);
     	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
     		e.printStackTrace();
     	}
@@ -166,6 +167,32 @@ public class HelloLuceneSimon implements Comparable {
 		System.out.println("yep");
 
     	
+
+    	
+    }  
+    
+    public void countDailyEvents(String[] input2) throws IOException{
+    	
+    	   
+    	// the "title" arg specifies the default field to use
+    	// when no field is explicitly specified in the query.
+    	String querystr = input2.length > 0 ? input2[0] : "lucene";
+    	
+    	Query q = null;
+    	try {
+    		q = new QueryParser(Version.LUCENE_40, "start_time", analyzer).parse(querystr);
+    	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+    		e.printStackTrace();
+    	}
+//
+    	// 3. search
+    	IndexReader reader = DirectoryReader.open(this.index);
+    	IndexSearcher searcher = new IndexSearcher(reader);
+    	TotalHitCountCollector totalHitCountCollector = new TotalHitCountCollector();
+    	  searcher.search(q,totalHitCountCollector);
+    	  int dailyEvents =  totalHitCountCollector.getTotalHits();
+    	  
+    		  	System.out.println("Date: " + querystr + " events: " + dailyEvents);
 
     	
     }  
