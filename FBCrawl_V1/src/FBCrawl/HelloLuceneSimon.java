@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -20,7 +21,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
@@ -42,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 public class HelloLuceneSimon implements Comparable {
+	private static final String AND_OPERATOR = null;
 	String input = "";
 	IndexWriter w;
 	StandardAnalyzer analyzer = null;
@@ -109,7 +113,7 @@ public class HelloLuceneSimon implements Comparable {
     
     }
     
-    public void search(String[] input2) throws IOException{
+    public void search(String[] input2) throws IOException, org.apache.lucene.queryparser.classic.ParseException{
     	
    
     	// the "title" arg specifies the default field to use
@@ -122,6 +126,24 @@ public class HelloLuceneSimon implements Comparable {
     	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
     		e.printStackTrace();
     	}
+    	String string1 = input2[0];
+    	String string2 = "20150209";
+    	String string3 = string1 + " " + string2;
+    	System.out.println(string3);
+    	String queryString = string3;
+    	String[] fields = new String[5];
+    	fields[0] = string1;
+    	fields[1] = string2;
+    	
+    	MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields, analyzer);
+    	queryParser.setDefaultOperator(QueryParser.Operator.AND);
+
+    	Query query = queryParser.parse(queryString);
+//    	
+//    	MultiFieldQueryParser  query = new MultiFieldQueryParser(Version.LUCENE_40,new String[]{"start_time", "description"},  new SimpleAnalyzer()).parse(string3);
+//    	query.setDefaultOperator(QueryParser.Operator.AND);
+    	        
+    	
 //
     	// 3. search
     	int hitsPerPage = 100;
@@ -129,7 +151,8 @@ public class HelloLuceneSimon implements Comparable {
     	IndexSearcher searcher = new IndexSearcher(reader);
     	TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
     	
-    	searcher.search(q, collector);
+    	
+    	searcher.search(query, collector);
 
        	
     	System.out.println(q);
@@ -144,7 +167,7 @@ public class HelloLuceneSimon implements Comparable {
 		}
 		
 		
-		
+	
 		Sort sorter = new Sort(); // new sort object
 
     	String field = "attending_count"; 
@@ -190,6 +213,7 @@ public class HelloLuceneSimon implements Comparable {
     	IndexSearcher searcher = new IndexSearcher(reader);
     	TotalHitCountCollector totalHitCountCollector = new TotalHitCountCollector();
     	  searcher.search(q,totalHitCountCollector);
+    	
     	  int dailyEvents =  totalHitCountCollector.getTotalHits();
     	  
     		  	System.out.println("Date: " + querystr + " events: " + dailyEvents);

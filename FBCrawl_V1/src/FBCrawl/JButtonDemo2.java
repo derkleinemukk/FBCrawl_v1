@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 import java.lang.Object;
+import java.net.MalformedURLException;
 
 import javax.swing.*;
 
@@ -18,6 +19,7 @@ import org.jdatepicker.JDateComponentFactory;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import org.json.JSONException;
 
 import facebook4j.FacebookException;
 
@@ -79,6 +81,12 @@ import facebook4j.FacebookException;
 						} catch (FileNotFoundException
 								| UnsupportedEncodingException
 								| FacebookException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (JSONException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (MalformedURLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
