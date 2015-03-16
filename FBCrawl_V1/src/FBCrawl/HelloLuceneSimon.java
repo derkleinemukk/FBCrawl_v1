@@ -3,54 +3,39 @@ package FBCrawl;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SortField.Type;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 public class HelloLuceneSimon implements Comparable {
-	private static final String AND_OPERATOR = null;
 	String input = "";
 	IndexWriter w;
 	StandardAnalyzer analyzer = null;
 	Directory index = null;
-    
+	Integer[][] dateEventCount = new Integer[100][100];
 
     IndexWriter indexWriter = null;
 
@@ -71,6 +56,10 @@ public class HelloLuceneSimon implements Comparable {
     	
     }
     
+    public Integer[][] returnCount(){
+		return dateEventCount;	
+    }
+    
     public void addDocument(JSONObject jsonObject, JSONArray arrayObjects) throws IOException, ParseException, JSONException{
     	int i = 2;
     	if ( i == 2 ){
@@ -83,16 +72,7 @@ public class HelloLuceneSimon implements Comparable {
     	Document doc = new Document();
     	//add string 1
     	
-    	System.out.println("id" + jsonObject.getString("id"));	
-    	//System.out.println("name" + jsonObject.getString("name"));
-    	//System.out.println("description" + jsonObject.getString("description"));
-    	//System.out.println("attending_count" + jsonObject.getString("attending_count"));
-		//System.out.println("declined_count" + jsonObject.getString("declined_count"));
-		//System.out.println("invited_count" + jsonObject.getString("invited_count"));
-		System.out.println("start_time" + jsonObject.getString("start_time"));
-	
-		
-	doc.add(new TextField("description", jsonObject.getString("description"), Field.Store.YES));
+    	doc.add(new TextField("description", jsonObject.getString("description"), Field.Store.YES));
 		doc.add(new TextField("id", jsonObject.getString("id"), Field.Store.YES));
 		doc.add(new TextField("name", jsonObject.getString("name"), Field.Store.YES));
 		String startTime = jsonObject.getString("start_time");
@@ -113,9 +93,9 @@ public class HelloLuceneSimon implements Comparable {
     
     }
     
-    public void search(String[] input2) throws IOException, org.apache.lucene.queryparser.classic.ParseException{
+    public String[][] search(String[] input,String[] input2) throws IOException{
     	
-   
+    	String[][] results = new String[100][100];
     	// the "title" arg specifies the default field to use
     	// when no field is explicitly specified in the query.
     	String querystr = input2.length > 0 ? input2[0] : "lucene";
@@ -126,48 +106,22 @@ public class HelloLuceneSimon implements Comparable {
     	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
     		e.printStackTrace();
     	}
-    	String string1 = input2[0];
-    	String string2 = "20150209";
-    	String string3 = string1 + " " + string2;
-    	System.out.println(string3);
-    	String queryString = string3;
-    	String[] fields = new String[5];
-    	fields[0] = string1;
-    	fields[1] = string2;
     	
-    	MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields, analyzer);
-    	queryParser.setDefaultOperator(QueryParser.Operator.AND);
-
-    	Query query = queryParser.parse(queryString);
-//    	
-//    	MultiFieldQueryParser  query = new MultiFieldQueryParser(Version.LUCENE_40,new String[]{"start_time", "description"},  new SimpleAnalyzer()).parse(string3);
-//    	query.setDefaultOperator(QueryParser.Operator.AND);
-    	        
+    	String querystr2 = input.length > 0 ? input[0] : "lucene";
     	
+    	Query q2 = null;
+    	try {
+    		q2 = new QueryParser(Version.LUCENE_40, "description", analyzer).parse(querystr2);
+    	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
+    		e.printStackTrace();
+    	}
 //
-    	// 3. search
-    	int hitsPerPage = 100;
+    	// 3. searchx§
+    	int hitsPerPage = 100000;
     	IndexReader reader = DirectoryReader.open(this.index);
     	IndexSearcher searcher = new IndexSearcher(reader);
     	TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
-    	
-    	
-    	searcher.search(query, collector);
-
-       	
-    	System.out.println(q);
-    	ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
-    	System.out.println("Found " + scoreDocs.length + " hits.");
-    	
-		for (int i = 0; i < scoreDocs.length; ++i) {
-			int docId = scoreDocs[i].doc;
-			Document d = searcher.doc(docId);
-			System.out.println((i + 1) + ". " + d.get("id") + "\t" + d.get("name") + d.get("attending_count") + "\t" + d.get("attending_count") + "\t"+ d.get("declined_count") + "\t"+ d.get("invited_count") + "\t"+ d.get("start_time") + "\t");
-
-		}
-		
-		
-	
+    
 		Sort sorter = new Sort(); // new sort object
 
     	String field = "attending_count"; 
@@ -178,45 +132,141 @@ public class HelloLuceneSimon implements Comparable {
     	sorter.setSort(sortField, SortField.FIELD_SCORE);
     	
 		
+    	
 		System.out.println("Sorted");    	
 		TopFieldDocs docs = searcher.search(q,20, sorter);
 		ScoreDoc[] hits= docs.scoreDocs;
 
+		
+		IndexReader reader2 = DirectoryReader.open(this.index);
+    	IndexSearcher searcher2 = new IndexSearcher(reader2);
+    	TopScoreDocCollector collector2 = TopScoreDocCollector.create(hitsPerPage, true);
+    	ScoreDoc[] scoreDocs2 = collector.topDocs().scoreDocs;
+    	
+    	searcher2.search(q2, collector2);
+    	System.out.println(scoreDocs2.length);
+		
 		for (int j=0; j < hits.length; j++) {
 			int docId = hits[j].doc;
 			Document d = searcher.doc(docId);
-			System.out.println((j+ 1) + ". " + d.get("id") + "\t" + d.get("name") + d.get("attending_count") + "\t" + d.get("attending_count") + "\t"+ d.get("declined_count") + "\t"+ d.get("invited_count") + "\t"+ d.get("start_time") + "\t");
+			results[j][0]=d.get("id");
+			results[j][1]= d.get("name");
+			results[j][2]= d.get("attending_count");
+			results[j][3]= d.get("start_time");
+			results[j][4]= d.get("location");
+			
+			for(int i2=0; i2< scoreDocs2.length; i2++){
+				int docId2 = scoreDocs2[i2].doc;
+				Document d2 = searcher2.doc(docId2);
+				System.out.println(d.get("id")+" "+d2.get("id"));
+				if(d.get("id").equals(d2.get("id"))){
+					
+					results[j][0]=d.get("id");
+					results[j][1]= d.get("name");
+					results[j][2]= d.get("attending_count");
+					results[j][3]= d.get("start_time");
+					results[j][4]= d.get("location");
+				}
+			
+			}
+			
 		}
 		System.out.println("yep");
-
+		return results;
     	
 
     	
     }  
     
-    public void countDailyEvents(String[] input2) throws IOException{
+    public Integer[][] countDailyEvents(String[] input2, String dateTo, String dateFrom) throws IOException{
     	
-    	   
+ 	   
     	// the "title" arg specifies the default field to use
     	// when no field is explicitly specified in the query.
     	String querystr = input2.length > 0 ? input2[0] : "lucene";
     	
+    	//city
     	Query q = null;
     	try {
-    		q = new QueryParser(Version.LUCENE_40, "start_time", analyzer).parse(querystr);
+    		q = new QueryParser(Version.LUCENE_40, "description", analyzer).parse(querystr);
     	} catch (org.apache.lucene.queryparser.classic.ParseException e) {
     		e.printStackTrace();
     	}
-//
-    	// 3. search
+    	
+    	int hitsPerPage = 100;
     	IndexReader reader = DirectoryReader.open(this.index);
     	IndexSearcher searcher = new IndexSearcher(reader);
-    	TotalHitCountCollector totalHitCountCollector = new TotalHitCountCollector();
-    	  searcher.search(q,totalHitCountCollector);
+    	TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
     	
-    	  int dailyEvents =  totalHitCountCollector.getTotalHits();
+    	searcher.search(q, collector);
+       	
+    	System.out.println(q);
+    	ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+    	System.out.println("Found " + scoreDocs.length + " hits.");
+    	
+    	for(int i=0; i<dateEventCount.length; i++){
+    		dateEventCount[i][1]=0;
+    	}
+    	
+    	int dateToConverted = Integer.parseInt(dateTo)%20150000;
+       	int dateFromConverted = Integer.parseInt(dateFrom)%20150000;
+    	
+       	
+    	int days = 0;
+    	int count = 0; 
+    	//counting
+		for (int i=0;i< scoreDocs.length; ++i) {
+			
+			int docId = scoreDocs[i].doc;
+			Document d = searcher.doc(docId);
+			int startTime = Integer.parseInt(d.get("start_time"));
+			//System.out.println((i + 1) + ". " + d.get("id") + "\t" + d.get("name") + d.get("attending_count") + "\t" + d.get("attending_count") + "\t"+ d.get("declined_count") + "\t"+ d.get("invited_count") + "\t"+ d.get("start_time") + "\t"+ startTime+ "\t");
+			days=0;
+			if(d.get("start_time") != null){
+				for(int i2=dateFromConverted; i2<=dateToConverted; i2++){
+					dateEventCount[days][0]=(i2+20150000);
+					if(startTime==(i2+20150000)){
+						
+						dateEventCount[days][1]++;
+					}
+					int operator = i2%1000;
+					int operator2 = operator%2;
+					int operator3 = operator2%100;
+					
+					if(operator2!=0){
+						if(operator3<31){
+							
+						}else{
+							i2=i2+70;
+						}
+					}else{
+						if(operator3<30){
+						
+						}else{
+							i2=i2+71;
+						}	
+					}
+					days++;
+				}
+			}else{
+				System.out.println("bum");
+			}
+			
+			
+		}
+		
+		for(int j=0; j< days;j++){
+			
+			System.out.println(dateEventCount[j][0]+" "+ dateEventCount[j][1]);
+			
+			
+		}
+		return dateEventCount;
+		
+		
+    	
     	  
-    		  	System.out.println("Date: " + querystr + " events: " + dailyEvents);
+    		  	
 
     	
     }  

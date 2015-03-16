@@ -27,24 +27,35 @@ import facebook4j.conf.ConfigurationBuilder;
 
 public class facebook4J{
     private static final long serialVersionUID = -7453606094644144082L;
-
-    public void IDretrieval(String query, long timeFrom, long timeTo) throws FileNotFoundException, UnsupportedEncodingException, FacebookException, JSONException, MalformedURLException {
+    Integer[] idList = new Integer[50000];
+    
+    public Integer[] returnList(){
+    	return idList;
+    }
+    
+    public void IDretrieval(String query, long timeFrom, long timeTo) throws FileNotFoundException, UnsupportedEncodingException, FacebookException, MalformedURLException, JSONException {
       
        
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
           .setOAuthAppId("657861844318963")
           .setOAuthAppSecret("52ff9596f18ed0ee9ae7992fee481246")
-          .setOAuthAccessToken("CAACEdEose0cBAFy5JZCGx75dtFKrflowIZAyHgfTpZB57szimXgj5ZB7m5EMzhG1SIgXCFxyK7H1ZCkweyLLfRNDpRBgK9wtnzVTpcLr3ZCZBLSAi1jPz6oQHADFZAxFzpinD3cgwXX2ctQaZCZCidrG3zpnBEdROwtU78NLCA7KhyoPetxNTA9Wnhx9J8enjmyQihZBfoqoD99hRkbi1ZAJvpNa1aiuHCDcHiAZD")
+          .setOAuthAccessToken("CAACEdEose0cBAIJZCZAsMaPi2AW521vJeLZAlSO7KeGZClRRuxT1D2OetLfZCyt46YV2nJP3o8s7Fqouuogy7052ZCLdvT24MY1yDJhTZA6MJSKRFy4wnyUtSvUsvAXSAdVGJRSAa0hozQMPalTtlBZAJsnFvUuHyIl2kdU3o3Kr4V0m00or7hFZC1EJZAnZCUXv08M6slNnDKKJZBgc73BymLvCvp2dd32RTvQZD")
           .setOAuthPermissions("email,publish_stream");
         FacebookFactory ff = new FacebookFactory(cb.build());
         Facebook facebook = ff.getInstance();
+        
+        String location = null;
+        Location Secondlocation = null;
+        String PlaceLocation = null;
         
     	int lowerBoundary = (int) timeFrom;
     	int lastBoundary = 0;
 		int endDate = (int) timeTo;
 		ResponseList<Event> results;
-		 ResponseList<RSVPStatus> responseList;
+		ResponseList<Place> results2;
+		Double city;
+		String country;
 		String lowerBoundaryString;
 		String ImplEndDate;
 		int help = 0;
@@ -54,7 +65,7 @@ public class facebook4J{
 		java.util.Date newlastEventDate = null;
 		long newlastEvent = 0;
 		long oldlastEvent = 0;
-		String file_name= query+".txt";
+		String file_name= query+timeFrom+timeTo+".txt";
 		PrintWriter writer = new PrintWriter(file_name, "UTF-8");
 		
 		while(endDate > lowerBoundary){
@@ -69,6 +80,7 @@ public class facebook4J{
 			 
 			 System.out.println("timestamp: "+ImplEndDate);
 		        results = facebook.searchEvents(query, new Reading().until(ImplEndDate));
+		        
         boolean a = true;
 
         if( a == results.isEmpty()){
@@ -77,21 +89,59 @@ public class facebook4J{
         }
         else {
         
-        
+        Boolean isLocation = true;
+    	
+       
         //My creation
         int i2=0;
         while(i2<results.size())
-        {
+        {	
+        	String CountryLocation = "";
         	String resultID = results.get(i2).getId();
-        	System.out.println(resultID);
-        	writer.println(resultID);
-        	Venue asdf = results.get(i2).getVenue();
+        	idList[i2]=Integer.parseInt(resultID);
         	
-        	
+        try{
+        
+        		location = results.get(i2).getLocation();
+        		
+        		if(location!=null){
+        		results2 = facebook.searchPlaces(location);
+            			
+        		PlaceLocation = results2.get(0).getLocation().getCity();
+    			CountryLocation = results2.get(0).getLocation().getCountry();
+        			if(CountryLocation!=null){
+		            	if(!CountryLocation.contains("")&&!CountryLocation.equals("Netherlands")){
+		            		isLocation =false;
+		            	}else{
+		            		isLocation = true;	
+		            	}
+            		}else if(PlaceLocation!=null){
+            			if(!PlaceLocation.contains("")&&!PlaceLocation.contains(query)){
+		            		isLocation =false;
+		            	}else{
+		            		isLocation = true;
+		            	}
+            		}
+            	}
+            	else{
+        			isLocation = false;
+        		}
+            	
+            	
+        		
+        	}catch(IndexOutOfBoundsException e){
+        		System.err.println();
+        	}
+        	if(isLocation){
+        		
+        		System.out.println(resultID+" "+location+" "+PlaceLocation);
+            	writer.println(resultID);
+            		
+        	}
         	try {
-        		String city = results.get(i2).getLocation();
-        		System.out.println(city);
-        		 responseList = facebook.getRSVPStatusInAttending(results.get(i2).getId()) ;
+        		
+        		
+        		 ResponseList<RSVPStatus> responseList = facebook.getRSVPStatusInAttending(results.get(i2).getId()) ;
         		 int i3 = 0;
         		 while(i3<responseList.size())
         		 {
@@ -110,12 +160,8 @@ public class facebook4J{
         	catch (FacebookException ef){
         		System.err.println("IndexOutOfBoundsException: " + ef.getMessage());
         	}
-        	
-        	
-        
         	i2++;
         	EventCounter++;
-        	
         }
         
         
